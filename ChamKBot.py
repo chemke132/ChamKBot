@@ -1,0 +1,63 @@
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+import random
+import discord
+from discord.ext import commands
+
+intents = discord.Intents.default()
+intents.message_content = True
+intents.dm_messages = False
+
+bot = commands.Bot(command_prefix=("!"), intents = intents) 
+
+@bot.command()
+async def 엄(ctx):
+    await ctx.send("준식")
+
+roulette = []
+
+@bot.command()
+async def 룰렛(ctx, action: str = '', *, content: str = ''):
+    if action == "추가":
+        if content in roulette:
+            await ctx.send("이미 있음")
+            return
+        roulette.append(content)
+        temp = "룰렛에 " + content + " 가 추가됨"
+        await ctx.send(temp)
+
+    elif action == "삭제":
+        if len(roulette) == 0:
+            await ctx.send("룰렛에 아무것도 설정 되어 있지 않음")
+            return
+        if content in roulette:
+            roulette.remove(content)
+            temp = "룰렛에서 " + content + "삭제됨"
+            await ctx.send(temp)
+        else:
+            await ctx.send("룰렛목록에 그런건 없음")
+    
+    elif action == "돌리기":
+        if len(roulette) == 0:
+            await ctx.send("안에 아무것도 없다 게이야")    
+        else:
+            result = roulette[random.randrange(0,len(roulette))]
+            temp = result + " 당첨"
+            await ctx.send(temp)
+
+    elif action == "목록":
+        if len(roulette) == 0:
+            await ctx.send("룰렛에 아무것도 추가하지 않았음")
+        else:
+            result = str(roulette)
+            temp = "룰렛 목록: " + result
+            await ctx.send(temp)
+    
+bot.run(os.getenv("DISCORD_API_KEY"))
+
+
+
+
